@@ -1,6 +1,10 @@
 import socket
 import threading
-import sys
+import cv2
+import pickle
+import numpy as np
+import struct
+import datetime
 
 
 HOST = '10.0.113.167'
@@ -38,6 +42,38 @@ def send_message_to_all(message):
     for user in active_clients:
         send_message_to_client(user, message)
 
+# Function to live stream the video
+def live_stream(client):
+    data = b""
+    payload_size = struct.calcsize(">L")
+    while True:
+        while len(data) < payload_size:
+            data += client.recv(4096)
+            if not data:
+                live_stream(client)
+
+        packed_msg_size = data[:payload_size]
+        data = data[payload_size:]
+        msg_size = struct.unpack(">L", packed_msg_size)[0]
+        print("msg_size: {}".format(msg_size))
+        recivDate = datetime.datetime.now()
+
+        while len(data) < msg_size:
+            container = client.recv(4096)
+            if not container:
+                live_stream(client)
+            data += container
+
+        frame_data = data[:msg_size]
+        data = data[msg_size:]
+        frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
+        print("delay: {}".format(recivDate - frame['time']))
+        frame = cv2.imdecode(frame['frame'], cv2.IMREAD_COLOR)
+
+        cv2.imshow("Live Stream", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
 # Function tp handle client
 def handle(client):
     while True:
@@ -53,8 +89,8 @@ def handle(client):
             prompt_message = "SERVER~" + f"{message} has joined the server!"
             send_message_to_all(prompt_message)
             break
-        # else:
-        #     print("Client's username is empty")
+        # live stream
+        # create a button to start live
 
     threading.Thread(target=listen_for_messages, args=(client, message)).start()
 
