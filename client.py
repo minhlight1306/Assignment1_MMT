@@ -7,6 +7,7 @@ import datetime
 import tkinter as tk
 from tkinter import scrolledtext
 from tkinter import messagebox
+from tkinter import PhotoImage
 
 DARK_GREY = '#121212'
 MEDIUM_GREY = '#1F1B24'
@@ -55,6 +56,7 @@ def connect():
         username_button.config(state=tk.DISABLED)
         stream_button.config(state=tk.NORMAL)
         message_button.config(state=tk.NORMAL)
+        guest_button.config(state=tk.DISABLED)
 
         # Start a thread to listen for messages from the server
         threading.Thread(target=listen_for_messages_from_server, args=(client, )).start()
@@ -164,6 +166,22 @@ def connect_to_p2p_server(ip, port):
 
     peer_socket.close()
 
+# Function to connect as a guest
+def connect_as_guest():
+    username = f"Guest{datetime.datetime.now().strftime('%H%M%S')}"  # Tạo username mặc định
+    try:
+        client.connect((HOST, POST))
+        register_peer(username)  # Đăng ký với server
+        username_button.config(state=tk.DISABLED)
+        stream_button.config(state=tk.DISABLED)
+        message_button.config(state=tk.DISABLED)
+        guest_button.config(state=tk.DISABLED)
+
+        # Bắt đầu lắng nghe tin nhắn từ server
+        threading.Thread(target=listen_for_messages_from_server, args=(client,)).start()
+    except Exception as e:
+        messagebox.showerror("Unable to connect to server", f"Error: {e}")
+
 root = tk.Tk()
 root.geometry("620x600")
 root.title("Messenger client")
@@ -194,12 +212,20 @@ username_button.pack(side=tk.LEFT, padx=(15, 5))
 stream_button = tk.Button(top_frame, text="Live", font=SMALL_FONT, bg=OCEAN_BLUE, fg=WHITE,
                           command=start_p2p_server)
 stream_button.pack(side=tk.LEFT, padx=5)
+stream_button.config(state=tk.DISABLED)
 
-message_textbox = tk.Entry(bottom_frame, font=FONT, bg=MEDIUM_GREY, fg=WHITE, width=38)
+message_textbox = tk.Entry(bottom_frame, font=FONT, bg=MEDIUM_GREY, fg=WHITE, width=35)
 message_textbox.pack(side=tk.LEFT, padx=10)
 
 message_button = tk.Button(bottom_frame, text="Send", font=MEDIUM_GREY, bg=OCEAN_BLUE, fg=WHITE, command=send_message)
-message_button.pack(side=tk.LEFT, padx=10)
+message_button.pack(side=tk.LEFT, padx=(10, 0))
+message_button.config(state=tk.DISABLED)
+
+# access_image = PhotoImage(file='C:/Users/PC/OneDrive/Desktop/CN1.1/Images/images.png')
+# guest_button = tk.Button(bottom_frame, image=access_image, command=connect_as_guest, bg='#464EB8', borderwidth=0)
+guest_button = tk.Button(bottom_frame, text="Guest", font=SMALL_FONT, bg=OCEAN_BLUE, fg=WHITE, command=connect_as_guest)
+guest_button.pack(side=tk.LEFT, padx=(5, 0))
+guest_button.config(state=tk.NORMAL)
 
 message_box = tk.Text(middle_frame, font=SMALL_FONT, bg=MEDIUM_GREY, fg=WHITE, width=62, height=26, wrap=tk.WORD)
 message_box.config(state=tk.DISABLED)
@@ -270,8 +296,6 @@ def listen_for_messages_from_server(client):
             break
 
 def main():
-    stream_button.config(state=tk.DISABLED)
-    message_button.config(state=tk.DISABLED)
     root.mainloop()
 
 if __name__ == '__main__':
