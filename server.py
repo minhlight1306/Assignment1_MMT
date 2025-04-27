@@ -9,7 +9,7 @@ import datetime
 import time
 
 
-HOST = '10.0.140.1'
+HOST = '192.168.0.114'
 POST = 55555 # use any port from 0 to 65535
 LISTENER_LIMIT = 5
 active_clients = []
@@ -48,7 +48,7 @@ def listen_for_messages(client, username, address):
                 nicknames.remove(username)
             client.close()
             send_message_to_all("SERVER~" + disconnect_message)
-            send_online_users(client)
+            # send_online_users(client)
             break
         except Exception as e:
             print(f"Error receiving message from {username}: {e}") 
@@ -120,7 +120,17 @@ def handle(client, addr):
                 listen_for_messages(client, username, addr)  # Listen for messages from the client
 
                 # threading.Thread(target=listen_for_messages, args=(client, usermane)).start()
-                
+
+            elif message.startswith("GUEST"):
+                username = f"Guest{datetime.datetime.now().strftime('%H%M%S')}"  # Tạo username mặc định
+                active_clients.append(client)
+                # nicknames.append(username)
+                peers[username] = (client, addr)
+
+                send_message_history(client)
+                send_online_users(client)
+                listen_for_messages(client, username, addr)
+
             elif message.startswith("START_LIVE"):
                 if live_stream_info is not None:
                         send_message_to_client(client, "ERROR~Another live stream is already active.")

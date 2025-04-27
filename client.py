@@ -19,7 +19,7 @@ SMALL_FONT = ("Helvetica", 13)
 GREAT_SMALL_FONT = ("Helvetica", 8)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-HOST = '10.0.140.1'
+HOST = '192.168.0.114'
 POST = 55555 # use any port from 0 to 65535
 
 def add_message(message):
@@ -168,10 +168,9 @@ def connect_to_p2p_server(ip, port):
 
 # Function to connect as a guest
 def connect_as_guest():
-    username = f"Guest{datetime.datetime.now().strftime('%H%M%S')}"  # Tạo username mặc định
     try:
         client.connect((HOST, POST))
-        register_peer(username)  # Đăng ký với server
+        client.sendall("GUEST".encode())  # Đăng ký với server
         username_button.config(state=tk.DISABLED)
         stream_button.config(state=tk.DISABLED)
         message_button.config(state=tk.DISABLED)
@@ -258,7 +257,6 @@ def listen_for_messages_from_server(client):
             if message != '':
                 if message.startswith("ONLINE_USERS~"):
                     user = message.split('~')[1]
-                    print(user)
                     update_online_users(user)
                     client.sendall("ACK".encode())
 
