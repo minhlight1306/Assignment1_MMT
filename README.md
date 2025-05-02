@@ -22,7 +22,7 @@ FACULTY OF COMPUTER SCIENCE AND ENGINEERING
 
 # Languages & Tools
 
-<img src="https://img.icons8.com/color/96/000000/c-programming.png" align="center" style="margin-left:10px;margin-bottom:5px;" width=70px/><img src="https://img.icons8.com/color/96/000000/linux--v1.png" align="center" style="margin-left:10px;margin-bottom:5px;" width=70px/>
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
 
 # Assignment1_MMT
   
@@ -35,6 +35,7 @@ Trước khi chạy ứng dụng, bạn cần cài đặt các thư viện cần
 
 ```bash
 pip install opencv-python Pillow numpy
+```
 
 ## Cấu trúc của BTL:
 ```
