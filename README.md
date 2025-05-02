@@ -63,4 +63,4 @@ pip install opencv-python Pillow numpy
 
 ## Hình ảnh minh họa
 
-![Đăng nhập ứng dụng]([https://github.com/minhlight1306/Assignment1_MMT/tree/a3d162c2fd1fa8c7d69b2d0202020b6546d7daec/Images/images.png](https://imgur.com/a/ZRzQRZH))
+![Đăng nhập ứng dụng](https://imgur.com/a/ZRzQRZH/sign_in.png)
