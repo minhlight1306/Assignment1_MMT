@@ -62,16 +62,23 @@ pip install opencv-python Pillow numpy
 - **Phát trực tiếp video**: Client có khả năng phát video từ webcam và truyền tải đến người dùng khác bằng P2P.
 
 ## Hình ảnh minh họa
-- Đầu tiên ta phải kết nối vào server tước:/n
+- Đầu tiên ta phải kết nối vào server tước:
+<br>
 <img src="https://github.com/user-attachments/assets/7fd1eb74-4aa6-4e61-9114-ad503d7a0500" alt="server_connect" width="500" height="800"/>
+<br>
 - Sau đó ta đăng nhập vào thiết bị bằng username:
+<br>
 <img src="https://github.com/user-attachments/assets/29253e0f-f859-450c-a002-9a10c35ae6cc" alt="Sign in" width="500" height="400"/> <img src="https://github.com/user-attachments/assets/29253e0f-f859-450c-a002-9a10c35ae6cc" alt="Sign in" width="500" height="400"/>
+<br>
 - Có thể đăng nhập bằng nhiều client:
 ![Image](https://github.com/user-attachments/assets/49cf64b7-fbba-4534-911c-b06e8b799884)
+<br>
 - Hay đăng nhập bằng chế độ không xác minh, không có thông báo online hay offline nhưng vẫn nhận tin nhắn từ server:
 <img src="https://github.com/user-attachments/assets/8b4e3f2c-fece-496f-8cc3-acc1babc68e8" alt="as_guest" width="500" height="400"/> <img src="https://github.com/user-attachments/assets/4aaa1b20-4b03-4579-bdd9-d73324d20823" alt="as_guest_other" width="500" height="400"/>
+<br>
 - Sau khi tài khoản đóng kết nối sẽ hiện thông báo:
 <img src="https://github.com/user-attachments/assets/66d3fee5-69c5-46f7-b55e-364586550cc8" alt="disconnect_mess" width="800" height="800"/>
+<br>
 - Khi kết thúc nếu muốn đóng server ta sẽ nhập lệnh 'exit'.
 
 
