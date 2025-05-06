@@ -65,12 +65,11 @@ pip install opencv-python Pillow numpy
 - Đầu tiên ta phải kết nối vào server tước:
 ![Image](https://github.com/user-attachments/assets/7fd1eb74-4aa6-4e61-9114-ad503d7a0500)
 - Sau đó ta đăng nhập vào thiết bị bằng username:
-<img src="https://github.com/user-attachments/assets/29253e0f-f859-450c-a002-9a10c35ae6cc" alt="Sign in" width="250" height="250"/>![Image](https://github.com/user-attachments/assets/0324359e-90d5-4b01-aa0d-7b8f3e4b3b52)
+<img src="https://github.com/user-attachments/assets/29253e0f-f859-450c-a002-9a10c35ae6cc" alt="Sign in" width="300" height="300"/> <img src="https://github.com/user-attachments/assets/29253e0f-f859-450c-a002-9a10c35ae6cc" alt="Sign in" width="300" height="300"/>
 - Có thể đăng nhập bằng nhiều client:
 ![Image](https://github.com/user-attachments/assets/49cf64b7-fbba-4534-911c-b06e8b799884)
 - Hay đăng nhập bằng chế độ không xác minh, không có thông báo online hay offline nhưng vẫn nhận tin nhắn từ server:
-![Image](https://github.com/user-attachments/assets/8b4e3f2c-fece-496f-8cc3-acc1babc68e8)
-![Image](https://github.com/user-attachments/assets/4aaa1b20-4b03-4579-bdd9-d73324d20823)
+<img src="https://github.com/user-attachments/assets/8b4e3f2c-fece-496f-8cc3-acc1babc68e8" alt="as_guest" width="300" height="300"/> <img src="https://github.com/user-attachments/assets/4aaa1b20-4b03-4579-bdd9-d73324d20823" alt="as_guest" width="300" height="300"/>
 - Sau khi tài khoản đóng kết nối sẽ hiện thông báo:
 ![Image](https://github.com/user-attachments/assets/66d3fee5-69c5-46f7-b55e-364586550cc8)
 - Khi kết thúc nếu muốn đóng server ta sẽ nhập lệnh 'exit'.
