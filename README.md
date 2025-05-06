@@ -60,13 +60,11 @@ pip install opencv-python Pillow numpy
 - **Phương thức**: Server sử dụng TCP để gửi/nhận gói tin.
 - **Quản lý người dùng trực tuyến**: Theo dõi và gửi danh sách người dùng đang trực tuyến.
 - **Gửi và nhận tin nhắn**: Server có thể gửi tin nhắn đến tất cả client và lưu trữ lịch sử tin nhắn.
-- **Quản lý phát trực tiếp**: Cho phép người dùng bắt đầu phát trực tiếp video (đang chỉnh sửa).
 
 ### 2. Client (`client.py`)
 - **Kết nối tới Server**: Client có thể kết nối tới server bằng cách sử dụng username để đăng nhập.
 - **Gửi và nhận tin nhắn**: Người dùng có thể gửi nhận tin nhắn từ các người dùng khác thông qua phương thức Client-Server.
 - **Nhận tin nhắn**: Client lắng nghe và hiển thị tin nhắn từ server.
-- **Phát trực tiếp video**: Client có khả năng phát video từ webcam và truyền tải đến người dùng khác bằng P2P.
 
 ### 3.Xác thực
 **Chế độ khách truy cập**: người dùng có thể kết nối với hệ thống để truy xuất nội dung kênh nhưng họ bị cấm thực hiện bất kỳ sửa đổi nội dung nào.
