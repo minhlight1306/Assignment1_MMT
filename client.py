@@ -8,6 +8,9 @@ import tkinter as tk
 from tkinter import scrolledtext
 from tkinter import messagebox
 from tkinter import PhotoImage
+import time
+import os
+import sys
 
 DARK_GREY = '#121212'
 MEDIUM_GREY = '#1F1B24'
@@ -19,8 +22,9 @@ SMALL_FONT = ("Helvetica", 13)
 GREAT_SMALL_FONT = ("Helvetica", 8)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-HOST = '192.168.0.114'
+HOST = '10.0.105.119'
 POST = 55555 # use any port from 0 to 65535
+running = True
 
 def add_message(message):
     message_box.config(state=tk.NORMAL)
@@ -63,108 +67,85 @@ def connect():
     except:
         messagebox.showerror("Unable to connect to server", f"Unable to server {HOST} {POST}")
 
-def send_request_live_stream(info):
-    while True:
-        try:
-            client.sendall("START_LIVE".encode())
-            print("start live")
-            while True:
-                try:
-                    response = client.recv(2048).decode("utf-8") # error here
-                    print(f"Received request: {response}")
-                    if response.startswith("READY~"):
-                            _, message = response.split("~")
-                            info[0], info[1], info[2] = message.split(":")
-                            print(f"Received live stream info: {message}")
-                            return
-                except Exception as e:
-                    print(f"Error : {e}") 
-                    return
-        except Exception as e:
-            print(f"Error send request: {e}")
-            return
-            
-def start_p2p_server():
-    print("Starting P2P server...")
-    info = []
-    send_request_live_stream(info)
-    print(f"Starting P2P server on ip {info[0]} listening port {info[1]} sending port {info[2]}")
+def send_request_live_stream():
+    client.sendall("START_LIVE".encode())
+    print("start live")
+        
+def start_live_stream():
+    print("Starting live stream...")
+    send_request_live_stream()
 
-    # Cổng nghe
-    listening_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    listening_socket.bind((info[0], int(info[1])))
-    listening_socket.listen(5)
-    print("Listening socket is running and waiting for connections...")
+    cap = cv2.VideoCapture(0)
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
-    # Cổng gửi
-    sending_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sending_socket.connect((info[0], int(info[2])))
-    print("Connected to sending socket")
-
-    def handle_client(client_socket):
-        cap = cv2.VideoCapture(0)
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
-
+    try:
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
+
             cv2.imshow("Live Stream", frame)
+            # Mã hóa khung hình
             result, encoded_frame = cv2.imencode('.jpg', frame, encode_param)
             data = pickle.dumps(encoded_frame, 0)
             size = len(data)
 
-            client_socket.sendall(struct.pack(">L", size) + data)
+            # Gửi dữ liệu video đến server
+            client.sendall(struct.pack(">L", size) + data)
 
-            if cv2.waitKey(1) == ord('q'):
+            if cv2.waitKey(1) == ord('`'):
+                print("Stopping live")
                 break
-            client_socket.sendall(struct.pack(">L", size) + data)
-
+    except Exception as e:
+        print(f"Error during live stream: {e}")
+    finally:
         cap.release()
         cv2.destroyAllWindows()
-        client_socket.close()
+        client.sendall("ACK")
 
-    while True:
-        client_socket, addr = listening_socket.accept()
-        threading.Thread(target=handle_client, args=(client_socket,)).start()
-
-# Function to live stream the video
-def connect_to_p2p_server(ip, port):
-    peer_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    peer_socket.connect((ip, port))
-    print(f"Connected to live stream at {ip}:{port}")
+# Function to connect live stream the video
+def connect_live():
+    print(f"Connected to live stream")
 
     data = b""
     payload_size = struct.calcsize(">L")
+    print("Payload size:", payload_size)
 
     while True:
-        while len(data) < payload_size:
-            packet = peer_socket.recv(4096)
-            if not packet:
-                return
-            data += packet
+        try:
+            while len(data) < payload_size:
+                packet = client.recv(4096)
+                if not packet:
+                    print("Client disconnected.")
+                    return
+                data += packet
 
-        packed_msg_size = data[:payload_size]
-        data = data[payload_size:]
-        msg_size = struct.unpack(">L", packed_msg_size)[0]
+            packed_msg_size = data[:payload_size]
+            data = data[payload_size:]
+            msg_size = struct.unpack(">L", packed_msg_size)[0]
+            print(f"Message size: {msg_size}")
 
-        while len(data) < msg_size:
-            packet = peer_socket.recv(4096)
-            if not packet:
+            while len(data) < msg_size:
+                packet = client.recv(4096)
+                if not packet:
+                    print("Incomplete frame received, skipping...")
+                    break
+                data += packet
+
+            frame_data = data[:msg_size]
+            data = data[msg_size:]
+
+            frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
+            frame = cv2.imdecode(frame['frame'], cv2.IMREAD_COLOR)
+
+            cv2.imshow("Fetch Live Stream", frame)
+            if cv2.waitKey(1) == ord('`'):
                 break
-            data += packet
-
-        frame_data = data[:msg_size]
-        data = data[msg_size:]
-
-        frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
-        frame = cv2.imdecode(frame['frame'], cv2.IMREAD_COLOR)
-
-        cv2.imshow("Fetch Live Stream", frame)
-        if cv2.waitKey(1):
+        except Exception as e:
+            print(f"Error receiving live stream: {e}")
             break
 
-    peer_socket.close()
+    cv2.destroyAllWindows()
 
 # Function to connect as a guest
 def connect_as_guest():
@@ -209,7 +190,7 @@ username_button = tk.Button(top_frame, text="Join", font=SMALL_FONT, bg=OCEAN_BL
 username_button.pack(side=tk.LEFT, padx=(15, 5))
 
 stream_button = tk.Button(top_frame, text="Live", font=SMALL_FONT, bg=OCEAN_BLUE, fg=WHITE,
-                          command=start_p2p_server)
+                          command=start_live_stream)
 stream_button.pack(side=tk.LEFT, padx=5)
 stream_button.config(state=tk.DISABLED)
 
@@ -220,9 +201,8 @@ message_button = tk.Button(bottom_frame, text="Send", font=MEDIUM_GREY, bg=OCEAN
 message_button.pack(side=tk.LEFT, padx=(10, 0))
 message_button.config(state=tk.DISABLED)
 
-# access_image = PhotoImage(file='C:/Users/PC/OneDrive/Desktop/CN1.1/Images/images.png')
-# guest_button = tk.Button(bottom_frame, image=access_image, command=connect_as_guest, bg='#464EB8', borderwidth=0)
-guest_button = tk.Button(bottom_frame, text="Guest", font=SMALL_FONT, bg=OCEAN_BLUE, fg=WHITE, command=connect_as_guest)
+guest_button = tk.Button(bottom_frame, text="Guest", font=SMALL_FONT, bg=OCEAN_BLUE, fg=WHITE, 
+                         command=connect_as_guest)
 guest_button.pack(side=tk.LEFT, padx=(5, 0))
 guest_button.config(state=tk.NORMAL)
 
@@ -249,8 +229,33 @@ def update_offline_users(user):
             online_box.insert(tk.END, f"{line}\n")
     online_box.config(state=tk.DISABLED)
 
+def reconnect_to_server():
+    global running
+    attempts = 0
+    max_attempts = 5
+    while attempts < max_attempts:
+        try:
+            print(f"Attempting to reconnect... ({attempts + 1}/{max_attempts})")
+            client.close()
+            # client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client.connect((HOST, POST))
+            print("Reconnected to the server.")
+            running = True
+            threading.Thread(target=listen_for_messages_from_server, args=(client,)).start()
+            return True
+        except Exception as e:
+            print(f"Reconnect attempt {attempts + 1} failed: {e}")
+            attempts += 1
+            time.sleep(5)  # Chờ 5 giây trước khi thử lại
+    print("Failed to reconnect after 5 attempts. Exiting...")
+    running = False
+    close_client()
+    return False
+
 def listen_for_messages_from_server(client):
-    while True:
+
+    global running
+    while running:
         try:
             message = client.recv(2048).decode("utf-8")
             print(f"Listen message: {message}")
@@ -269,8 +274,8 @@ def listen_for_messages_from_server(client):
                     update_offline_users(user)
 
                 elif message.startswith("LIVE_STREAM~"):
-                    ip, port = message.split("~")[1].split(":")
-                    threading.Thread(target=connect_to_p2p_server, args=(ip, int(port))).start()
+                    
+                    threading.Thread(target=connect_live, args=()).start()
                 
                 elif message.startswith("HISTORY"):
                     fulcontent = ' '.join(message.split(' ')[1:])
@@ -288,10 +293,28 @@ def listen_for_messages_from_server(client):
         except ConnectionResetError:
             print("Connection to the server was lost.")
             messagebox.showerror("Error", "Connection to the server was lost.")
-            break
+            running = False
+            if not reconnect_to_server():
+                break
+        except UnicodeDecodeError:
+            pass
         except Exception as e:
             print(f"Error listen message: {e}")
             break
+
+def close_client():
+    global running
+    running = False
+    try:
+        client.close()  # Đóng socket
+        print("\nClient socket closed.")
+    except Exception as e:
+        print(f"Error while closing client socket: {e}")
+    finally:
+        root.destroy()
+        os._exit(0)
+
+root.protocol("WM_DELETE_WINDOW", close_client)
 
 def main():
     root.mainloop()
