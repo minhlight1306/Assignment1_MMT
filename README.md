@@ -50,7 +50,7 @@ pip install opencv-python Pillow numpy
 
 ### 1. Server (`server.py`)
 - **Kết nối với Client**: Server lắng nghe các kết nối từ nhiều client và xử lý các yêu cầu.
-- **Phương thức**: Server sử dụng UDP để gửi/nhận gói tin.
+- **Phương thức**: Server sử dụng TCP để gửi/nhận gói tin.
 - **Quản lý người dùng trực tuyến**: Theo dõi và gửi danh sách người dùng đang trực tuyến.
 - **Gửi và nhận tin nhắn**: Server có thể gửi tin nhắn đến tất cả client và lưu trữ lịch sử tin nhắn.
 - **Quản lý phát trực tiếp**: Cho phép người dùng bắt đầu phát trực tiếp video (đang chỉnh sửa).
@@ -62,7 +62,17 @@ pip install opencv-python Pillow numpy
 - **Phát trực tiếp video**: Client có khả năng phát video từ webcam và truyền tải đến người dùng khác bằng P2P.
 
 ## Hình ảnh minh họa
-
-<img src="https://github.com/user-attachments/assets/29253e0f-f859-450c-a002-9a10c35ae6cc" alt="Sign in" width="250" height="250"/>
+- Đầu tiên ta phải kết nối vào server tước:
+![Image](https://github.com/user-attachments/assets/7fd1eb74-4aa6-4e61-9114-ad503d7a0500)
+- Sau đó ta đăng nhập vào thiết bị bằng username:
+<img src="https://github.com/user-attachments/assets/29253e0f-f859-450c-a002-9a10c35ae6cc" alt="Sign in" width="250" height="250"/>![Image](https://github.com/user-attachments/assets/0324359e-90d5-4b01-aa0d-7b8f3e4b3b52)
+- Có thể đăng nhập bằng nhiều client:
+![Image](https://github.com/user-attachments/assets/49cf64b7-fbba-4534-911c-b06e8b799884)
+- Hay đăng nhập bằng chế độ không xác minh, không có thông báo online hay offline nhưng vẫn nhận tin nhắn từ server:
+![Image](https://github.com/user-attachments/assets/8b4e3f2c-fece-496f-8cc3-acc1babc68e8)
+![Image](https://github.com/user-attachments/assets/4aaa1b20-4b03-4579-bdd9-d73324d20823)
+- Sau khi tài khoản đóng kết nối sẽ hiện thông báo:
+![Image](https://github.com/user-attachments/assets/66d3fee5-69c5-46f7-b55e-364586550cc8)
+- Khi kết thúc nếu muốn đóng server ta sẽ nhập lệnh 'exit'.
 
 
