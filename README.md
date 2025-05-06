@@ -46,6 +46,13 @@ pip install opencv-python Pillow numpy
  ┣ 📜README.md      # Mô tả chức năng và cách sử dụng.
 ```
 
+
+## Các bước kết nối chi tiết là:
+### 1. submit_info: đối tác mới gửi IP máy chủ và cổng của mình
+### 2. add_list: quy trình theo dõi trên máy chủ tập trung thêm thông tin mới vào danh sách theo dõi
+### 3. get_list: phản hồi của máy chủ tập trung với danh sách theo dõi trên đối tác yêu cầu
+### 4. peer_connect dựa trên danh sách theo dõi đã thu được, đối tác kết nối trực tiếp với một đối tác khác
+
 ## Chức năng
 
 ### 1. Server (`server.py`)
@@ -60,6 +67,25 @@ pip install opencv-python Pillow numpy
 - **Gửi và nhận tin nhắn**: Người dùng có thể gửi nhận tin nhắn từ các người dùng khác thông qua phương thức Client-Server.
 - **Nhận tin nhắn**: Client lắng nghe và hiển thị tin nhắn từ server.
 - **Phát trực tiếp video**: Client có khả năng phát video từ webcam và truyền tải đến người dùng khác bằng P2P.
+
+### 3.Xác thực
+**Chế độ khách truy cập**: người dùng có thể kết nối với hệ thống để truy xuất nội dung kênh nhưng họ bị cấm thực hiện bất kỳ sửa đổi nội dung nào.
+- Khách truy cập không cần phải đăng nhập.
+- Mỗi khách truy cập được server quản lý theo tên riêng.
+- Khách truy cập chỉ được cấp quyền xem.
+- Khách truy cập không được phép chỉnh sửa/tạo nội dung.
+
+**Chế độ người dùng đã xác thực**: những người dùng này được yêu cầu đăng nhập để xác thực và lập danh sách kiểm soát truy cập.
+- Người dùng đã xác thực được yêu cầu đăng nhập
+- Người dùng đã xác thực được cấp mọi quyền chỉnh sửa/tạo nội dung.
+- Trạng thái trực tuyến của người dùng được hiển thị cho tất cả người dùng đã xác thực khác
+
+### 4.Đồng bộ hóa
+- **Kết nối Channel hosting**: khi người dùng chuyển từ ngoại tuyến sang trực tuyến, họ cần đồng bộ hóa giữa nội dung trong đối tác cục bộ và nội dung trên máy chủ tập trung. Trong thời gian trực tuyến, nó sẽ tiếp tục cập nhật ở cả hai nơi một cách đồng bộ.
+- Cập nhật danh sách người dùng trực tuyến - ACK.
+- Cập nhật lịch sử tin nhắn cho người dùng trực tuyến - ACK.
+- Cập nhật người dùng trực tuyến - ACK
+- Đồng bộ tin nhắn - UDP
 
 ## Hình ảnh minh họa
 <div style="margin-bottom: 20px;">
